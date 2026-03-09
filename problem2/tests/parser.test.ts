@@ -11,8 +11,6 @@ const validInput = [
   "2 70 200",
 ];
 
-// ─── Valid input ───────────────────────────────────────────────────────────────
-
 describe("parseInput — valid input", () => {
   test("parses base cost correctly", () => {
     const { baseCost } = parseInput(validInput);
@@ -61,8 +59,6 @@ describe("parseInput — valid input", () => {
   });
 });
 
-// ─── Invalid package lines ─────────────────────────────────────────────────────
-
 describe("parseInput — throws ValidationError on bad package input", () => {
   const err = (fn: () => void) => expect(fn).toThrow(ValidationError);
 
@@ -102,8 +98,6 @@ describe("parseInput — throws ValidationError on bad package input", () => {
     err(() => parseInput(["100 1", "PKG1 50 -10", "1 70 200"]));
   });
 });
-
-// ─── Invalid fleet line ────────────────────────────────────────────────────────
 
 describe("parseInput — throws ValidationError on bad fleet input", () => {
   const err = (fn: () => void) => expect(fn).toThrow(ValidationError);

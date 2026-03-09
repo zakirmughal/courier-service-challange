@@ -9,8 +9,6 @@ const pkg = (id: string, weight: number, distance: number): Package => ({
 // Verify ShipmentSelector satisfies the IShipmentSelector contract
 const selector: IShipmentSelector = new ShipmentSelector();
 
-// ─── Sample input steps ────────────────────────────────────────────────────────
-
 describe("ShipmentSelector — sample input steps (maxWeight=200)", () => {
   const pkgs = [
     pkg("PKG1", 50, 30),
@@ -40,7 +38,6 @@ describe("ShipmentSelector — sample input steps (maxWeight=200)", () => {
   });
 });
 
-// ─── Priority: count > weight > distance ──────────────────────────────────────
 
 describe("ShipmentSelector — count priority", () => {
   test("prefers 2 light packages over 1 heavy", () => {
@@ -71,8 +68,6 @@ describe("ShipmentSelector — distance tiebreaker (same count & weight)", () =>
     expect(selector.findBest(packages, 50)[0].id).toBe("B");
   });
 });
-
-// ─── Weight boundaries ────────────────────────────────────────────────────────
 
 describe("ShipmentSelector — weight boundaries", () => {
   test("includes package at exact maxWeight", () => {

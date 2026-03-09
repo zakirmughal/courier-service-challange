@@ -13,8 +13,6 @@ const pkg = (id: string, weight: number, distance: number, offerCode = ""): Pack
   id, weight, distance, offerCode,
 });
 
-// ─── Sample input (spec) ───────────────────────────────────────────────────────
-
 describe("scheduleDeliveries — sample input (spec)", () => {
   const packages: Package[] = [
     pkg("PKG1", 50,  30,  "OFR001"),
@@ -66,8 +64,6 @@ describe("scheduleDeliveries — sample input (spec)", () => {
   });
 });
 
-// ─── Single vehicle ────────────────────────────────────────────────────────────
-
 describe("scheduleDeliveries — single vehicle, single package", () => {
   test("delivers correctly with no waiting", () => {
     const results = scheduleDeliveries(0, [pkg("A", 50, 70)], { vehicleCount: 1, maxSpeed: 70, maxWeight: 200 }, calculator, selector);
@@ -90,8 +86,6 @@ describe("scheduleDeliveries — single vehicle, multiple trips", () => {
   });
 });
 
-// ─── Multiple vehicles ─────────────────────────────────────────────────────────
-
 describe("scheduleDeliveries — multiple vehicles", () => {
   test("second vehicle picks up next batch while first is returning", () => {
     const packages = [pkg("A", 50, 100), pkg("B", 50, 100), pkg("C", 150, 50)];
@@ -113,8 +107,6 @@ describe("scheduleDeliveries — multiple vehicles", () => {
   });
 });
 
-// ─── Truncation ────────────────────────────────────────────────────────────────
-
 describe("scheduleDeliveries — truncation (not rounding)", () => {
   test("3.457... truncates to 3.45, not 3.46", () => {
     const results = scheduleDeliveries(0, [pkg("X", 10, 242)], { vehicleCount: 1, maxSpeed: 70, maxWeight: 200 }, calculator, selector);
@@ -132,8 +124,6 @@ describe("scheduleDeliveries — truncation (not rounding)", () => {
     expect(results.find((r) => r.id === "B")!.estimatedDeliveryTime).toBe(4.19);
   });
 });
-
-// ─── Discount flows through ────────────────────────────────────────────────────
 
 describe("scheduleDeliveries — discount applied correctly", () => {
   test("OFR003 discount reflected in output", () => {
