@@ -95,3 +95,57 @@ Run all tests:
 ```bash
 npm test:p1
 ```
+
+---
+
+## Problem 2 — Delivery Time Estimation
+
+Extends Problem 1 by estimating delivery time using a fleet of vehicles.
+
+**Shipment Selection Rules (per trip):**
+1. Maximise number of packages per vehicle
+2. If tied, prefer heavier total weight
+3. If still tied, prefer smallest max distance (delivered soonest)
+
+**Vehicle return time** is based on the farthest package in the shipment.
+
+> Delivery times are **truncated** (not rounded) to 2 decimal places.
+> e.g. `3.456` → `3.45`
+
+### Input Format
+
+```
+base_delivery_cost no_of_packages
+pkg_id weight_kg distance_km offer_code
+...
+no_of_vehicles max_speed_kmph max_carriable_weight_kg
+```
+
+### Run
+
+**Windows CMD** — save input to a file, then redirect:
+
+1. Create `input.txt`:
+```
+100 5
+PKG1 50 30 OFR001
+PKG2 75 125 OFR008
+PKG3 175 100 OFR003
+PKG4 110 60 OFR002
+PKG5 155 95 NA
+2 70 200
+```
+2. Run:
+```cmd
+npm run p2 < input.txt
+```
+
+---
+
+## Tests
+
+Run all tests:
+
+```bash
+npm test:p2
+```
