@@ -5,3 +5,7 @@ import { Package, PackageResult } from "./types";
 export interface ICostCalculator {
   calculate(baseCost: number, packages: Package[]): PackageResult[];
 }
+
+export interface IShipmentSelector {
+  findBest(packages: Package[], maxWeight: number): Package[];
+}
