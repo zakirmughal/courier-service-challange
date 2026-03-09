@@ -8,8 +8,17 @@ function main() {
   const rl = readline.createInterface({ input: process.stdin });
   const lines: string[] = [];
   const calculator = new CostCalculator(offerRegistry);
+  let totalLines = Infinity; // determined after first line is read
 
-  rl.on("line", (line) => lines.push(line));
+  rl.on("line", (line) => {
+    lines.push(line);
+    // First line: "baseCost numPackages" — now we know exactly how many lines we need
+    if (lines.length === 1) {
+      const numPackages = parseInt(line.trim().split(/\s+/)[1], 10);
+      totalLines = isNaN(numPackages) ? Infinity : numPackages + 1;
+    }
+    if (lines.length >= totalLines) rl.close();
+  });
 
   rl.on("close", () => {
     try {

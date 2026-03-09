@@ -2,6 +2,7 @@ import { scheduleDeliveries } from "../src/scheduler";
 import { CostCalculator } from "../../shared/calculator";
 import { ShipmentSelector } from "../src/shipment";
 import { offerRegistry } from "../../shared/offers";
+import { UndeliverablePackageError } from "../../shared/errors";
 import { Package } from "../../shared/types";
 import { FleetConfig } from "../src/types";
 
@@ -122,6 +123,22 @@ describe("scheduleDeliveries — truncation (not rounding)", () => {
 
     expect(results.find((r) => r.id === "A")!.estimatedDeliveryTime).toBe(1.42);
     expect(results.find((r) => r.id === "B")!.estimatedDeliveryTime).toBe(4.19);
+  });
+});
+
+describe("scheduleDeliveries — undeliverable package", () => {
+  test("throws UndeliverablePackageError when a package exceeds maxWeight", () => {
+    const packages = [pkg("HEAVY", 300, 50), pkg("OK", 50, 50)];
+    const fleet: FleetConfig = { vehicleCount: 1, maxSpeed: 70, maxWeight: 200 };
+    expect(() => scheduleDeliveries(100, packages, fleet, calculator, selector))
+      .toThrow(UndeliverablePackageError);
+  });
+
+  test("error message contains the package id and weights", () => {
+    const packages = [pkg("HEAVY", 300, 50)];
+    const fleet: FleetConfig = { vehicleCount: 1, maxSpeed: 70, maxWeight: 200 };
+    expect(() => scheduleDeliveries(100, packages, fleet, calculator, selector))
+      .toThrow("HEAVY");
   });
 });
 

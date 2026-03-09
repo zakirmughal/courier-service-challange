@@ -1,5 +1,6 @@
 import { Package } from "../../shared/types";
 import { ICostCalculator, IShipmentSelector } from "../../shared/interfaces";
+import { UndeliverablePackageError } from "../../shared/errors";
 import { FleetConfig, DeliveryResult } from "./types";
 
 // Work in integer hundredths to avoid floating-point accumulation errors.
@@ -40,7 +41,10 @@ export function scheduleDeliveries(
     const vehicleIdx         = vehicleAvailableHundredths.indexOf(earliestHundredths);
 
     const shipment = selector.findBest(remaining, maxWeight);
-    if (shipment.length === 0) break;
+    if (shipment.length === 0) {
+      const blocked = remaining[0];
+      throw new UndeliverablePackageError(blocked.id, blocked.weight, maxWeight);
+    }
 
     const farthest          = Math.max(...shipment.map((p) => p.distance));
     const tripHundredths    = Math.floor((farthest / maxSpeed) * 100); // truncate

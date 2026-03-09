@@ -9,43 +9,51 @@ export class ShipmentSelector implements IShipmentSelector {
    */
   findBest(packages: Package[], maxWeight: number): Package[] {
     const eligible = packages.filter((p) => p.weight <= maxWeight);
-    const n = eligible.length;
-    if (n === 0) return [];
+    if (eligible.length === 0) return [];
 
-    let best: Package[] = [];
-    let bestCount    = -1;
-    let bestWeight   = -1;
-    let bestMaxDist  = Infinity;
+    // Pass 1: maximise count
+    // Secondary sort by distance asc: for equal-weight packages, prefer the
+    // closer one — this naturally satisfies priority 3 (smallest max distance)
+    const byWeightAsc = [...eligible].sort(
+      (a, b) => a.weight - b.weight || a.distance - b.distance,
+    );
+    
+    const selected = new Set<Package>();
+    let total = 0;
 
-    // Enumerate every non-empty subset using bitmask
-    for (let mask = 1; mask < (1 << n); mask++) {
-      const subset: Package[] = [];
-      let totalWeight = 0;
-
-      for (let i = 0; i < n; i++) {
-        if (mask & (1 << i)) {
-          subset.push(eligible[i]);
-          totalWeight += eligible[i].weight;
-        }
-      }
-
-      if (totalWeight > maxWeight) continue;
-
-      const count   = subset.length;
-      const maxDist = Math.max(...subset.map((p) => p.distance));
-
-      if (
-        count > bestCount ||
-        (count === bestCount && totalWeight > bestWeight) ||
-        (count === bestCount && totalWeight === bestWeight && maxDist < bestMaxDist)
-      ) {
-        best        = subset;
-        bestCount   = count;
-        bestWeight  = totalWeight;
-        bestMaxDist = maxDist;
+    for (const pkg of byWeightAsc) {
+      if (total + pkg.weight <= maxWeight) {
+        selected.add(pkg);
+        total += pkg.weight;
       }
     }
 
-    return best;
+    // Pass 2: maximise total weight by swapping light→heavy (count stays fixed)
+    let improved = true;
+    while (improved) {
+      improved = false;
+
+      const unselected = eligible
+        .filter((p) => !selected.has(p))
+        .sort((a, b) => b.weight - a.weight); // heaviest first
+
+      const lightFirst = [...selected].sort((a, b) => a.weight - b.weight);
+
+      for (const heavy of unselected) {
+        for (const light of lightFirst) {
+          if (heavy.weight <= light.weight) break; // no gain possible from here
+          if (total - light.weight + heavy.weight <= maxWeight) {
+            selected.delete(light);
+            selected.add(heavy);
+            total = total - light.weight + heavy.weight;
+            improved = true;
+            break;
+          }
+        }
+        if (improved) break; // restart with updated sets
+      }
+    }
+
+    return [...selected];
   }
 }
